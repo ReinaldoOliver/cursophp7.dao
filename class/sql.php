@@ -8,15 +8,14 @@ class sql extends PDO {
 // comandos utilizados para execultar no DB 
 /*PREPAR utiliza declarações preparadas uma vez feita a consulta ela é otimizada pelo banco e pode ser executada N vezes o que muda são os argumentos, seu uso evita problema com sql injection desde que usado corretamente.*/	
 //setParams retorna o resultado de toa a consulta ao DB em um array.
-	private function setParams($statment, $parameters = array()){
+	private function setParams($statement, $parameters = array()){
 /*foreach retorna os resultados de cada campo  consulta no caso os parametros do DB e seus valores */
 		foreach ($parameters as $key => $value) {
-			//$statment->bindParam($key, $value);
-			$this->statment($key, $value);
+		$this->setParam($statement,$key, $value);
 	    }
 	}
-	private function setParam($statment, $key, $value){
-		$statment->bindParam($key, $value);
+	private function setParam($statement, $key, $value){
+		$statement->bindParam($key, $value);
 	}
 /*PDO :: query () executa uma instrução SQL em uma única chamada de função, retornando o conjunto de resultados (se houver) retornado pela instrução como um objeto PDOStatement.*/
 	public function query($rawQuery, $params = array()){
