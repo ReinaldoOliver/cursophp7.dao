@@ -34,12 +34,7 @@ class usuarios{
     $sql = new Sql();
     $results = $sql->select("SELECT * FROM tb_usuarios WHERE idusuarios = :ID", array(":ID" =>$id ));
     if (count($results)>0){
-        $row= $results[0];
-        $this->setidusuarios($row['idusuarios']);
-        $this->setlogin($row['login']);        
-        $this->setsenha($row['senha']);
-        $this->setcadastro(new DateTime($row['cadastro']));
-
+      $this->setData($results[0]);
     }
  }
  public static function getList(){
@@ -55,23 +50,40 @@ class usuarios{
     $results = $sql->select("SELECT * FROM tb_usuarios WHERE login = :LOGIN AND senha = :PASSWORD", array(":LOGIN"=>$login,":PASSWORD"=>$password));
      if(count($results)>0){
         $row = $results[0];
-        $this->setidusuarios($row['idusuarios']);
-        $this->setlogin($row['login']);
-        $this->setsenha($row['senha']);
-        $this->setcadastro(new DateTime($row['cadastro']));
+        $this->setData($results[0]);
+       
      }else{
         throw new Exception("login e/ou senha invalidos");
 
      }
  }
+ public function setData($data){
+ $this->setidusuarios($data['idusuarios']);
+        $this->setlogin($data['login']);
+        $this->setsenha($data['senha']);
+        $this->setcadastro(new DateTime($data['cadastro']));
+     }
+ public function insert(){
+   $sql = new Sql();
+   $results = $sql->select("CALL sp_usuarios_insert(:LOGIN, :PASSWORD)", array(':LOGIN'=>$this->getlogin(), ':PASSWORD'=>$this->getsenha()));
+ if(count($results)>0){
+   $this->setData($results[0]);}
+ }
+public function update($login, $senha){
+   $this->setlogin($login);
+   $this->setsenha($senha);
+   $sql= new Sql();
+   $sql->query("UPDATE tb_usuarios SET login = :LOGIN, senha = :PASSWORD WHERE idusuarios = :ID", array(':LOGIN'=>$this->getlogin(), ':PASSWORD'=>$this->getsenha(),'ID'=>$this->getidusuarios()));
 
+
+}
  //toString executa o que ha dentro dele[]
    public function __toString(){
     return json_encode(array(
         "idusuarios"=>$this->getidusuarios(),
         "login"=>$this->getlogin(),
         "senha"=>$this->getsenha(), 
-        "cadastro"=>$this->getcadastro()->format("d-m-y H:i:s"))
+        "cadastro"=>$this->getcadastro()->format("d/m/y H:i:s"))
     );
  }
 }
